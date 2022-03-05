@@ -7,8 +7,8 @@ The idea of this small project is because the IT department of my company resets
 
 ## Permission requirement
 
-<img src="./resources/access-required-storage.png" width=300>
-<img src="./resources/access-required-event.png" width=300>
+<img src="./resources/access-required-storage.png" width=200>
+<img src="./resources/access-required-event.png" width=200>
 
 
 ## Next step
