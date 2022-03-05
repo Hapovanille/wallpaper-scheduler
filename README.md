@@ -7,8 +7,8 @@ The idea of this small project is because the IT department of my company resets
 
 ## Permission requirement
 
-![](https://github.com/Hapovanille/wallpaper-scheduler/blob/master/resources/access-required-storage.jpg)
-![](https://github.com/Hapovanille/wallpaper-scheduler/blob/master/resources/access-required-event.jpg)
+<img src="./resources/access-required-storage.png" width=300>
+<img src="./resources/access-required-event.png" width=300>
 
 
 ## Next step
