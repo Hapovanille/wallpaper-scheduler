@@ -3,14 +3,12 @@ package wpscheduler
 // Forked from https://github.com/reujab/wallpaper/blob/master/darwin.go
 import (
 	"os/exec"
-	"os/user"
-	"path/filepath"
 	"strconv"
 	"strings"
 )
 
-// Get returns the path to the current wallpaper.
-func Get() (string, error) {
+// GetWallpaper Get returns the path to the current wallpaper.
+func GetWallpaper() (string, error) {
 	stdout, err := exec.Command("osascript", "-e", `tell application "Finder" to get POSIX path of (get desktop picture as alias)`).Output()
 	if err != nil {
 		return "", err
@@ -25,11 +23,25 @@ func SetFromFile(file string) error {
 	return exec.Command("osascript", "-e", `tell application "System Events" to tell every desktop to set picture to `+strconv.Quote(file)).Run()
 }
 
-func getCacheDir() (string, error) {
-	usr, err := user.Current()
+// SetWallpaper Check if the wallpaper is changed. If so, update it to the default one
+func SetWallpaper() (bool, error) {
+	const defaultWallpaper = "/System/Library/Desktop Pictures/Monterey Graphic.heic"
+
+	background, err := GetWallpaper()
 	if err != nil {
-		return "", err
+		return false, err
 	}
 
-	return filepath.Join(usr.HomeDir, "Library", "Caches"), nil
+	// check if current wallpaper is different than the default one
+	if background != defaultWallpaper {
+		err = SetFromFile(defaultWallpaper)
+		if err != nil {
+			return false, err
+		}
+		// SetFromFile succeed
+		return true, nil
+	}
+
+	// wallpaper never changed
+	return false, nil
 }

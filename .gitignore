@@ -7,3 +7,4 @@ log/
 # coverage
 *.html
 *.out
+.DS_Store
