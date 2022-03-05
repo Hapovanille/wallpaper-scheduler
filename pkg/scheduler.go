@@ -14,6 +14,7 @@ const (
 	logFileName = "log_file_wps"
 )
 
+//Start the main app
 func (wp *WallpaperScheduler) Start() {
 	if wp.isRunning() {
 		return
@@ -57,6 +58,7 @@ func (wp *WallpaperScheduler) Start() {
 	}()
 }
 
+//Quit the main app
 func (wp *WallpaperScheduler) Quit() {
 	if wp != nil && wp.isRunning() {
 		wp.ticker.Stop()
