@@ -49,7 +49,7 @@ func onReady() {
 
 			case <-about.ClickedCh:
 				log.Infof("main: requesting about")
-				robotgo.ShowAlert("Wallpaper Scheduler app v1.0.0", "Developed by Hapovanille. \n\nMore info at: https://github.com/Hapovanille/wp-scheduler")
+				robotgo.ShowAlert("Wallpaper Scheduler app v1.1.0", "Developed by Hapovanille. \n\nMore info at: https://github.com/Hapovanille/wp-scheduler")
 			}
 		}
 	}()

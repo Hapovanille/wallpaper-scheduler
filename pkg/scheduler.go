@@ -10,8 +10,9 @@ import (
 var instance *WallpaperScheduler
 
 const (
-	logDir      = "log"
-	logFileName = "log_file_wps"
+	logDir           = "log"
+	logFileName      = "log_file_wps"
+	defaultWallpaper = "/System/Library/Desktop Pictures/Monterey Graphic.heic"
 )
 
 //Start the main app
@@ -20,11 +21,11 @@ func (wp *WallpaperScheduler) Start() {
 		return
 	}
 	wp.quit = make(chan bool)
-	wp.ticker = time.NewTicker(50 * time.Minute)
+	wp.ticker = time.NewTicker(1 * time.Second)
 	wp.updateRunningStatus(true)
-	logger := getLogger(wp, false, logFileName)
+	logger := getLogger(wp, true, logFileName)
 	logger.Infof("scheduler: running status set")
-	success, err := SetWallpaper()
+	success, err := SetWallpaper(defaultWallpaper)
 	if err != nil {
 		logger.Infof("scheduler: set failed by %s", err)
 		go func() {
@@ -36,7 +37,7 @@ func (wp *WallpaperScheduler) Start() {
 		for {
 			select {
 			case t := <-wp.ticker.C:
-				success, err = SetWallpaper()
+				success, err = SetWallpaper(defaultWallpaper)
 				if err != nil {
 					logger.Infof("scheduler: set failed by %s", err)
 					go func() {
@@ -47,8 +48,9 @@ func (wp *WallpaperScheduler) Start() {
 					logger.Infof("scheduler: set succeeded, lastUpdateTime updated from %s to %s", wp.getlastUpdateTime().String(), t.String())
 					wp.setlastUpdateTime(t)
 
+				} else {
+					logger.Infof("scheduler: unchanged %s", t.String())
 				}
-				logger.Infof("scheduler: unchanged %s", t.String())
 			case <-wp.quit:
 				wp.updateRunningStatus(false)
 				return

@@ -24,8 +24,7 @@ func SetFromFile(file string) error {
 }
 
 // SetWallpaper Check if the wallpaper is changed. If so, update it to the default one
-func SetWallpaper() (bool, error) {
-	const defaultWallpaper = "/System/Library/Desktop Pictures/Monterey Graphic.heic"
+func SetWallpaper(wallpaper string) (bool, error) {
 
 	background, err := GetWallpaper()
 	if err != nil {
@@ -33,8 +32,8 @@ func SetWallpaper() (bool, error) {
 	}
 
 	// check if current wallpaper is different than the default one
-	if background != defaultWallpaper {
-		err = SetFromFile(defaultWallpaper)
+	if background != wallpaper {
+		err = SetFromFile(wallpaper)
 		if err != nil {
 			return false, err
 		}
