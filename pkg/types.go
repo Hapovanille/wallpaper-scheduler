@@ -14,4 +14,5 @@ type WallpaperScheduler struct {
 	lastUpdateTime time.Time
 	mutex          sync.RWMutex
 	logFile        *os.File
+	errCount       int
 }

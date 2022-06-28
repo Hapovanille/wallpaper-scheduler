@@ -12,7 +12,7 @@ var instance *WallpaperScheduler
 const (
 	logDir           = "log"
 	logFileName      = "log_file_wps"
-	defaultWallpaper = "/System/Library/Desktop Pictures/Monterey Graphic.heic"
+	DefaultWallpaper = "/System/Library/Desktop Pictures/Monterey Graphic.heic"
 )
 
 //Start the main app
@@ -23,9 +23,9 @@ func (wp *WallpaperScheduler) Start() {
 	wp.quit = make(chan bool)
 	wp.ticker = time.NewTicker(1 * time.Second)
 	wp.updateRunningStatus(true)
-	logger := getLogger(wp, true, logFileName)
+	logger := getLogger(wp, false, logFileName)
 	logger.Infof("scheduler: running status set")
-	success, err := SetWallpaper(defaultWallpaper)
+	success, err := SetWallpaper(DefaultWallpaper)
 	if err != nil {
 		logger.Infof("scheduler: set failed by %s", err)
 		go func() {
@@ -37,16 +37,23 @@ func (wp *WallpaperScheduler) Start() {
 		for {
 			select {
 			case t := <-wp.ticker.C:
-				success, err = SetWallpaper(defaultWallpaper)
+				success, err = SetWallpaper(DefaultWallpaper)
 				if err != nil {
 					logger.Infof("scheduler: set failed by %s", err)
-					go func() {
-						robotgo.ShowAlert("scheduler: update wallpaper fails at %s", t.String())
-					}()
+
+					//show the error alert only three times
+					if wp.getErrCount() <= 3 {
+						go func() {
+							robotgo.ShowAlert("scheduler: update wallpaper fails at %s", t.String())
+						}()
+						errCount := wp.getErrCount()
+						wp.setErrCount(errCount + 1)
+					}
 				}
 				if success {
 					logger.Infof("scheduler: set succeeded, lastUpdateTime updated from %s to %s", wp.getlastUpdateTime().String(), t.String())
 					wp.setlastUpdateTime(t)
+					wp.setErrCount(0)
 
 				} else {
 					logger.Infof("scheduler: unchanged %s", t.String())
@@ -103,6 +110,18 @@ func (wp *WallpaperScheduler) setlastUpdateTime(time time.Time) {
 	wp.mutex.Lock()
 	defer wp.mutex.Unlock()
 	wp.lastUpdateTime = time
+}
+
+func (wp *WallpaperScheduler) getErrCount() int {
+	wp.mutex.RLock()
+	defer wp.mutex.RUnlock()
+	return wp.errCount
+}
+
+func (wp *WallpaperScheduler) setErrCount(count int) {
+	wp.mutex.Lock()
+	defer wp.mutex.Unlock()
+	wp.errCount = count
 }
 
 func getLogger(wp *WallpaperScheduler, doWriteToFile bool, filename string) *log.Logger {
