@@ -40,7 +40,7 @@ func onReady() {
 
 			case <-wpForceUpdate.ClickedCh:
 				log.Infof("main: Force updating the default wallpaper")
-				wpscheduler.SetWallpaper(wpscheduler.DefaultWallpaper) //ignore return values
+				_, _ = wpscheduler.SetWallpaper(wpscheduler.DefaultWallpaper) //ignore return values
 				log.Infof("main: Wallpaper update attempted")
 
 			case <-wpStop.ClickedCh:
@@ -58,7 +58,7 @@ func onReady() {
 
 			case <-about.ClickedCh:
 				log.Infof("main: Requesting about page")
-				robotgo.ShowAlert("Wallpaper Scheduler app v1.2.0", "Developed by Hapovanille. \n\nMore info at: https://github.com/Hapovanille/wp-scheduler")
+				robotgo.ShowAlert("Wallpaper Scheduler app v1.2.0", "Developed by Hapovanille. \n\nMore info at: https://github.com/Hapovanille/wallpaper-scheduler")
 			}
 		}
 	}()

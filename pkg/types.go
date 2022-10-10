@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-//WallpaperScheduler is the main struct for the app
+// WallpaperScheduler is the main struct for the app
 type WallpaperScheduler struct {
 	isAppRunning   bool
 	quit           chan bool

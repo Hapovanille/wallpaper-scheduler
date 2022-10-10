@@ -15,7 +15,7 @@ const (
 	DefaultWallpaper = "/System/Library/Desktop Pictures/Monterey Graphic.heic"
 )
 
-//Start the main app
+// Start the main app
 func (wp *WallpaperScheduler) Start() {
 	if wp.isRunning() {
 		return
@@ -30,6 +30,8 @@ func (wp *WallpaperScheduler) Start() {
 		logger.Infof("scheduler: set failed by %s", err)
 		go func() {
 			robotgo.ShowAlert("scheduler Update wallpaper fails", time.Now().String())
+			errCount := wp.getErrCount()
+			wp.setErrCount(errCount + 1)
 		}()
 	}
 
@@ -41,8 +43,8 @@ func (wp *WallpaperScheduler) Start() {
 				if err != nil {
 					logger.Infof("scheduler: set failed by %s", err)
 
-					//show the error alert only three times
-					if wp.getErrCount() <= 3 {
+					//show the error alert at most three times
+					if wp.getErrCount() < 3 {
 						go func() {
 							robotgo.ShowAlert("scheduler: update wallpaper fails at %s", t.String())
 						}()
@@ -51,10 +53,9 @@ func (wp *WallpaperScheduler) Start() {
 					}
 				}
 				if success {
-					logger.Infof("scheduler: set succeeded, lastUpdateTime updated from %s to %s", wp.getlastUpdateTime().String(), t.String())
-					wp.setlastUpdateTime(t)
+					logger.Infof("scheduler: set succeeded, lastUpdateTime updated from %s to %s", wp.getLastUpdateTime().String(), t.String())
+					wp.setLastUpdateTime(t)
 					wp.setErrCount(0)
-
 				} else {
 					logger.Infof("scheduler: unchanged %s", t.String())
 				}
@@ -67,7 +68,7 @@ func (wp *WallpaperScheduler) Start() {
 	}()
 }
 
-//Quit the main app
+// Quit the main app
 func (wp *WallpaperScheduler) Quit() {
 	if wp != nil && wp.isRunning() {
 		wp.ticker.Stop()
@@ -79,7 +80,7 @@ func (wp *WallpaperScheduler) Quit() {
 	}
 }
 
-//GetInstance gets the singleton instance for wallpaper scheduler app
+// GetInstance gets the singleton instance for wallpaper scheduler app
 func GetInstance() *WallpaperScheduler {
 	if instance == nil {
 		instance = &WallpaperScheduler{}
@@ -100,13 +101,13 @@ func (wp *WallpaperScheduler) updateRunningStatus(isRunning bool) {
 	wp.isAppRunning = isRunning
 }
 
-func (wp *WallpaperScheduler) getlastUpdateTime() time.Time {
+func (wp *WallpaperScheduler) getLastUpdateTime() time.Time {
 	wp.mutex.RLock()
 	defer wp.mutex.RUnlock()
 	return wp.lastUpdateTime
 }
 
-func (wp *WallpaperScheduler) setlastUpdateTime(time time.Time) {
+func (wp *WallpaperScheduler) setLastUpdateTime(time time.Time) {
 	wp.mutex.Lock()
 	defer wp.mutex.Unlock()
 	wp.lastUpdateTime = time
