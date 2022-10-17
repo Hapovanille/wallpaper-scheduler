@@ -1,0 +1,5 @@
+# This is the config file for the wpscheduler package
+wallpaper:
+  path: "/System/Library/Desktop Pictures/Monterey Graphic.heic"
+refresh:
+  frequency: 1 # every %d second(s)

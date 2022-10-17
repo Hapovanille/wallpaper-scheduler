@@ -40,7 +40,7 @@ func onReady() {
 
 			case <-wpForceUpdate.ClickedCh:
 				log.Infof("main: Force updating the default wallpaper")
-				_, _ = wpscheduler.SetWallpaper(wpscheduler.DefaultWallpaper) //ignore return values
+				_, _ = wpscheduler.SetWallpaper(wpscheduler.Wallpaper) //ignore return values
 				log.Infof("main: Wallpaper update attempted")
 
 			case <-wpStop.ClickedCh:

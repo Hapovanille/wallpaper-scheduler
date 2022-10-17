@@ -10,6 +10,7 @@ build: clean
 	mkdir -p -v ./bin/wpscheduler.app/Contents/MacOS
 	cp ./appInfo/*.plist ./bin/wpscheduler.app/Contents/Info.plist
 	cp ./appInfo/*.icns ./bin/wpscheduler.app/Contents/Resources/icon.icns
+	cp ./configs/config.yaml ./bin/wpscheduler.app/Contents/MacOS/config.yaml
 	go build -o ./bin/wpscheduler.app/Contents/MacOS/wpscheduler cmd/main.go
 
 open: build

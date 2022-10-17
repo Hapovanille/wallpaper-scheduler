@@ -1,18 +1,22 @@
 package wpscheduler
 
 import (
+	"errors"
 	"github.com/go-vgo/robotgo"
 	log "github.com/sirupsen/logrus"
 	"os"
 	"time"
 )
 
-var instance *WallpaperScheduler
+var (
+	instance     *WallpaperScheduler
+	TimeInterval = 60
+	Wallpaper    = "/System/Library/Desktop Pictures/Monterey Graphic.heic"
+)
 
 const (
-	logDir           = "log"
-	logFileName      = "log_file_wps"
-	DefaultWallpaper = "/System/Library/Desktop Pictures/Monterey Graphic.heic"
+	logDir      = "log"
+	logFileName = "log_file_wps"
 )
 
 // Start the main app
@@ -20,12 +24,28 @@ func (wp *WallpaperScheduler) Start() {
 	if wp.isRunning() {
 		return
 	}
-	wp.quit = make(chan bool)
-	wp.ticker = time.NewTicker(1 * time.Second)
-	wp.updateRunningStatus(true)
 	logger := getLogger(wp, false, logFileName)
 	logger.Infof("scheduler: running status set")
-	success, err := SetWallpaper(DefaultWallpaper)
+
+	if _, err := os.Stat(GetConfigRelativePath()); errors.Is(err, os.ErrNotExist) {
+		logger.Infof("scheduler: config file does not exist")
+	} else {
+		logger.Infof("scheduler: config file exists")
+		if GetTimeInterval() > 0 {
+			TimeInterval = GetTimeInterval()
+			logger.Infof("config: time interval set to %d", TimeInterval)
+		}
+		if GetWallpaperPath() != "" {
+			Wallpaper = GetWallpaperPath()
+			logger.Infof("config: wallpaper set to %s", Wallpaper)
+		}
+	}
+
+	wp.quit = make(chan bool)
+	wp.ticker = time.NewTicker(time.Duration(TimeInterval) * time.Second)
+	wp.updateRunningStatus(true)
+
+	success, err := SetWallpaper(Wallpaper)
 	if err != nil {
 		logger.Infof("scheduler: set failed by %s", err)
 		go func() {
@@ -39,7 +59,7 @@ func (wp *WallpaperScheduler) Start() {
 		for {
 			select {
 			case t := <-wp.ticker.C:
-				success, err = SetWallpaper(DefaultWallpaper)
+				success, err = SetWallpaper(Wallpaper)
 				if err != nil {
 					logger.Infof("scheduler: set failed by %s", err)
 
